@@ -8,3 +8,4 @@ df = pd.read_csv("https://ourworldindata.org/grapher/mismanaged-plastic-waste-pe
 metadata = requests.get("https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita.metadata.json?v=1&csvType=full&useColumnShortNames=true").json()
 
 print(metadata["columns"].keys())
+print(df["year"].unique())
