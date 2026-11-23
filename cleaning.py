@@ -10,7 +10,7 @@ CLEANED_ROOT = DATA_ROOT / "cleaned"
 OWID_FILE = RAW_ROOT / "owid_mismanaged_plastic_per_capita.csv"
 COUNTRY_FILE = RAW_ROOT / "wdi_countries.json"
 WDI_FILES = {"infant_mortality_per_1000": RAW_ROOT / "wdi_infant_mortality_2019.json",
-    "gdp_pc_ppp_2021": RAW_ROOT / "wdi_gdp_per_capita_ppp_2019.json",
+    "gdp_pc_ppp_2019": RAW_ROOT / "wdi_gdp_per_capita_ppp_2019.json",
     "basic_sanitation_pct": RAW_ROOT / "wdi_basic_sanitation_2019.json"}
 
 def create_dataframe(file_path, name_column):
@@ -24,7 +24,7 @@ def create_dataframe(file_path, name_column):
         rows.append({
             "iso3": observation["countryiso3code"],
             "year": int(observation["date"]),
-            value_column: float(observation["value"]) if observation["value"] is not None else None,
+            name_column_column: float(observation["value"]) if observation["value"] is not None else None,
         })
 
     table = pd.DataFrame(rows)
@@ -37,7 +37,7 @@ def dataframe_country(file_path) :
 
     countries = json_data[1]
 
-    rows = [{"iso3": country["id"].upper(),
+    rows = [{"iso3": country["id"],
             "country_name": country["name"],
             "region_id": (country.get("region") or {}).get("id", ""),
             "region_name": (country.get("region") or {}).get("value", "")}
@@ -47,19 +47,13 @@ def dataframe_country(file_path) :
 
 #Séparer pays et régions 
 
-def dataframe_OWID(country_codes) #renvoie un tuple des dataframes des pays et des régions 
+def dataframe_OWID(country_codes) : #renvoie un tuple des dataframes des pays et des régions 
     """Charge OWID, garde 2019 et sépare les agrégats"""
     raw = pd.read_csv(OWID_FILE)
-    original_rows = len(raw)
-
-    entity_column = "Entity"
-    code_column = "Code"
-    year_column = "Year"
-    value_column = "Mismanaged plastic waste per capita"
 
     table = raw[[entity_column, code_column, year_column, value_column]].copy()
     table.columns = ["entity", "iso3", "year", "plastic_kg_per_person"]
-    table["iso3"] = table["iso3"].fillna("").astype(str).str.upper().str.strip() #NA devient "", on convertit en texte, MAJ et pas d'espaces-
+    table["iso3"] = table["iso3"].fillna("").astype(str)#NA devient ""
     table["year"] = pd.to_numeric(table["year"], errors="coerce").astype("Int64") #entiers type pandas (contient les valeurs manquantes)
     table["plastic_kg_per_person"] = pd.to_numeric(
     table["plastic_kg_per_person"], errors="coerce")
