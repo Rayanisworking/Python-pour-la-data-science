@@ -29,3 +29,18 @@ def create_dataframe(file_path, name_column):
 
     table = pd.DataFrame(rows)
     return table.loc[table["year"] == 2019] #table_loc garde les lignes où la condition est vraie
+
+
+def dataframe_country(file_path) :
+    with file_path.open("r", encoding="utf-8") as file:
+        json_data = json.load(file)
+
+    countries = json_data[1]
+
+    rows = [{"iso3": country["id"].upper(),
+            "country_name": country["name"],
+            "region_id": (country.get("region") or {}).get("id", ""),
+            "region_name": (country.get("region") or {}).get("value", "")}
+            for country in countries]
+
+    return pd.DataFrame(rows)       
