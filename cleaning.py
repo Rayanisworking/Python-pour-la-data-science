@@ -43,9 +43,7 @@ def dataframe_country(file_path) :
         region_id = region.get("id")
         region_name = region.get("value")
         is_aggregate = region_id in ("", "NA") or region_name.lower() == "aggregates"
-
-    rows.append({"iso3": (country.get("id")),
-        "country_name": (country.get("name")),
+        rows.append({"iso3": (country.get("id")), "country_name": (country.get("name")),
         "region_id": region_id,
         "region_name": region_name,
         "is_aggregate": is_aggregate})
@@ -74,7 +72,7 @@ def prepare_project_data():
     CLEANED_ROOT.mkdir(parents=True, exist_ok=True)
 
     country_metadata = dataframe_country(COUNTRY_FILE)
-    valid_country_codes = set( country_metadata.loc[~country_metadata["is_aggregate"], "iso3"])
+    valid_country_codes = set(country_metadata.loc[(~country_metadata["is_aggregate"]), "iso3"]) 
     valid_country_codes.discard("")
 
     df_country, df_region = dataframe_OWID(valid_country_codes)
