@@ -64,3 +64,43 @@ def dataframe_OWID(country_codes) : #renvoie un tuple des dataframes des pays et
     region = year_table.loc[~is_country].copy()
 
     return country, region
+
+
+def prepare_project_data():
+    CLEANED_ROOT.mkdir(parents=True, exist_ok=True)
+
+    country_metadata = dataframe_country(COUNTRY_FILE)
+    valid_country_codes = set(
+        country_metadata.loc[~country_metadata["is_aggregate"], "iso3"]
+    )
+    valid_country_codes.discard("")
+
+    df_country, df_region = dataframe_OWID(valid_country_codes)
+
+    wdi_tables = {}
+    for name_column, file_path in WDI_FILES.items():
+        table = dataframe_WDI(file_path, value_column)
+        table = table.loc[table["iso3"].isin(valid_country_codes)].copy()
+        wdi_tables[value_column] = table
+
+    merged = df_country.copy()
+
+    for name_column, table in wdi_tables.items():
+        merged = merged.merge(
+            table,
+            on=["iso3", "year"],
+            how="left",
+            validate="one_to_one",
+        )
+
+    df_pair = merged.dropna(
+        subset=["plastic_kg_per_person", "infant_mortality_per_1000"]
+    ).copy()
+    
+    df_complete = merged.dropna().copy()
+
+    return {"merged": merged,
+        "pair_plastic_infant": df_pair,
+        "complete": df_complete,
+        "excluded": df_region,
+        "country_metadata": country_metadata}
