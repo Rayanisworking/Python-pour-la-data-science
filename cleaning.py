@@ -13,7 +13,7 @@ WDI_FILES = {"infant_mortality_per_1000": RAW_ROOT / "wdi_infant_mortality_2019.
     "gdp_pc_ppp_2019": RAW_ROOT / "wdi_gdp_per_capita_ppp_2019.json",
     "basic_sanitation_pct": RAW_ROOT / "wdi_basic_sanitation_2019.json"}
 
-def create_dataframe(file_path, name_column):
+def dataframe_WDI(file_path, name_column):
     with file_path.open("r", encoding="utf-8") as file:
         json_data = json.load(file)
 
@@ -24,7 +24,7 @@ def create_dataframe(file_path, name_column):
         rows.append({
             "iso3": observation["countryiso3code"],
             "year": int(observation["date"]),
-            name_column_column: float(observation["value"]) if observation["value"] is not None else None,
+            name_column : float(observation["value"]) if observation["value"] is not None else None,
         })
 
     table = pd.DataFrame(rows)
@@ -37,26 +37,31 @@ def dataframe_country(file_path) :
 
     countries = json_data[1]
 
-    rows = [{"iso3": country["id"],
-            "country_name": country["name"],
-            "region_id": (country.get("region") or {}).get("id", ""),
-            "region_name": (country.get("region") or {}).get("value", "")}
-            for country in countries]
+    rows = []
+    for country in countries:
+        region = country.get("region") 
+        region_id = region.get("id")
+        region_name = region.get("value")
+        is_aggregate = region_id in ("", "NA") or region_name.lower() == "aggregates"
+
+    rows.append({"iso3": (country.get("id")),
+        "country_name": (country.get("name")),
+        "region_id": region_id,
+        "region_name": region_name,
+        "is_aggregate": is_aggregate})
 
     return pd.DataFrame(rows)
 
 #Séparer pays et régions 
 
 def dataframe_OWID(country_codes) : #renvoie un tuple des dataframes des pays et des régions 
-    """Charge OWID, garde 2019 et sépare les agrégats"""
     raw = pd.read_csv(OWID_FILE)
 
-    table = raw[[entity_column, code_column, year_column, value_column]].copy()
+    table = raw[["entity", "code", "year", "mismanaged_plastic_waste_per_capita__kg_per_year"]].copy()
     table.columns = ["entity", "iso3", "year", "plastic_kg_per_person"]
-    table["iso3"] = table["iso3"].fillna("").astype(str)#NA devient ""
+    table["iso3"] = table["iso3"].fillna("").astype(str) #NA devient ""
     table["year"] = pd.to_numeric(table["year"], errors="coerce").astype("Int64") #entiers type pandas (contient les valeurs manquantes)
-    table["plastic_kg_per_person"] = pd.to_numeric(
-    table["plastic_kg_per_person"], errors="coerce")
+    table["plastic_kg_per_person"] = pd.to_numeric(table["plastic_kg_per_person"], errors="coerce")
 
     year_table = table.loc[table["year"] == 2019].copy()
     is_country = year_table["iso3"].isin(country_codes)
@@ -65,23 +70,20 @@ def dataframe_OWID(country_codes) : #renvoie un tuple des dataframes des pays et
 
     return country, region
 
-
 def prepare_project_data():
     CLEANED_ROOT.mkdir(parents=True, exist_ok=True)
 
     country_metadata = dataframe_country(COUNTRY_FILE)
-    valid_country_codes = set(
-        country_metadata.loc[~country_metadata["is_aggregate"], "iso3"]
-    )
+    valid_country_codes = set( country_metadata.loc[~country_metadata["is_aggregate"], "iso3"])
     valid_country_codes.discard("")
 
     df_country, df_region = dataframe_OWID(valid_country_codes)
 
     wdi_tables = {}
     for name_column, file_path in WDI_FILES.items():
-        table = dataframe_WDI(file_path, value_column)
+        table = dataframe_WDI(file_path, name_column)
         table = table.loc[table["iso3"].isin(valid_country_codes)].copy()
-        wdi_tables[value_column] = table
+        wdi_tables[name_column] = table
 
     merged = df_country.copy()
 
@@ -94,13 +96,21 @@ def prepare_project_data():
         )
 
     df_pair = merged.dropna(
-        subset=["plastic_kg_per_person", "infant_mortality_per_1000"]
-    ).copy()
+        subset=["plastic_kg_per_person", "infant_mortality_per_1000"]).copy()
     
-    df_complete = merged.dropna().copy()
+    df_complete = merged.dropna().copy() 
+   
+    exports = {"merged_2019.csv": merged, "pair_plastic_infant_2019.csv": df_pair, "complete_2019.csv": df_complete, 
+            "excluded_2019.csv": df_region,
+            "country_metadata.csv": country_metadata}
+    for filename, df in exports.items():
+        df.to_csv(CLEANED_ROOT / filename, index=False)
 
     return {"merged": merged,
         "pair_plastic_infant": df_pair,
         "complete": df_complete,
         "excluded": df_region,
         "country_metadata": country_metadata}
+
+if __name__ == "__main__":
+    prepare_project_data()
