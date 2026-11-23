@@ -43,4 +43,30 @@ def dataframe_country(file_path) :
             "region_name": (country.get("region") or {}).get("value", "")}
             for country in countries]
 
-    return pd.DataFrame(rows)       
+    return pd.DataFrame(rows)
+
+#Séparer pays et régions 
+
+def dataframe_OWID(country_codes) #renvoie un tuple des dataframes des pays et des régions 
+    """Charge OWID, garde 2019 et sépare les agrégats"""
+    raw = pd.read_csv(OWID_FILE)
+    original_rows = len(raw)
+
+    entity_column = "Entity"
+    code_column = "Code"
+    year_column = "Year"
+    value_column = "Mismanaged plastic waste per capita"
+
+    table = raw[[entity_column, code_column, year_column, value_column]].copy()
+    table.columns = ["entity", "iso3", "year", "plastic_kg_per_person"]
+    table["iso3"] = table["iso3"].fillna("").astype(str).str.upper().str.strip() #NA devient "", on convertit en texte, MAJ et pas d'espaces-
+    table["year"] = pd.to_numeric(table["year"], errors="coerce").astype("Int64") #entiers type pandas (contient les valeurs manquantes)
+    table["plastic_kg_per_person"] = pd.to_numeric(
+    table["plastic_kg_per_person"], errors="coerce")
+
+    year_table = table.loc[table["year"] == 2019].copy()
+    is_country = year_table["iso3"].isin(country_codes)
+    country = year_table.loc[is_country].copy()
+    region = year_table.loc[~is_country].copy()
+
+    return country, region
