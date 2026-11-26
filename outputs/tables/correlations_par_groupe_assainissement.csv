@@ -1,0 +1,4 @@
+Niveau d'accès à l'assainissement,n,Médiane plastique (kg/hab.),Médiane mortalité (‰),Pearson (r),Spearman (rho)
+Accès limité (< 70 % de la pop.),40,11.4639345,42.849999999999994,-0.015052541440581478,0.054507927812824555
+Accès intermédiaire (70 % – 95 %),41,7.2906585,13.7,0.3614574799658367,0.45245873121014085
+Accès quasi universel (≥ 95 % de la pop.),58,0.564798385,5.2,0.4228218725671435,0.5195329112061836
