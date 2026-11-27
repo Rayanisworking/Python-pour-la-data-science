@@ -1,0 +1,44 @@
+{
+  "description": "Sources publiques et empreintes des snapshots locaux.",
+  "manifest_generated_at_utc": "2026-11-27T12:07:08.715133+00:00",
+  "year": 2019,
+  "note": "La date ci-dessus est la création du manifeste, pas nécessairement la date d'extraction initiale des snapshots conservés.",
+  "files": [
+    {
+      "file": "owid_mismanaged_plastic_per_capita.csv",
+      "url": "https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita.csv?v=1&csvType=full&useColumnShortNames=true",
+      "sha256": "44a9097323e6db9d7d78f70770d1579dac1fae157ee519082fd0bbcb32dea5c1",
+      "size_bytes": 4970
+    },
+    {
+      "file": "owid_mismanaged_plastic_per_capita.metadata.json",
+      "url": "https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita.metadata.json?v=1&csvType=full&useColumnShortNames=true",
+      "sha256": "71bd3c44338aff547235dd79539b5dc6be339d97b30ae161fcd70d5ae812afc3",
+      "size_bytes": 1505
+    },
+    {
+      "file": "wdi_countries.json",
+      "url": "https://api.worldbank.org/v2/country?format=json&per_page=400",
+      "sha256": "6de70e3e7ecb3496d0d3925b3cb6e28951a04eb6fcedfd3b9f87249357a9aa5a",
+      "size_bytes": 125801
+    },
+    {
+      "file": "wdi_infant_mortality_2019.json",
+      "url": "https://api.worldbank.org/v2/country/all/indicator/SP.DYN.IMRT.IN?date=2019&format=json&per_page=20000",
+      "sha256": "1fd95c4e704ed5a8a8f97284cb11485b5f1bad3f20835251e03b2856c76faef6",
+      "size_bytes": 67350
+    },
+    {
+      "file": "wdi_gdp_per_capita_ppp_2019.json",
+      "url": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.PP.KD?date=2019&format=json&per_page=20000",
+      "sha256": "a7dec82898a6d4300a0e0a8980c51a553783385615b198e4c576ec759b6959fe",
+      "size_bytes": 72104
+    },
+    {
+      "file": "wdi_basic_sanitation_2019.json",
+      "url": "https://api.worldbank.org/v2/country/all/indicator/SH.STA.BASS.ZS?date=2019&format=json&per_page=20000",
+      "sha256": "5203b1c65379364b119f169c85d727148d471a04a8ec1e3b12bb20feb5c2dff1",
+      "size_bytes": 74920
+    }
+  ]
+}

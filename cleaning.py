@@ -1,6 +1,6 @@
 from pathlib import Path
 import pandas as pd
-from download import download,  RAW_ROOT
+from download import RAW_ROOT
 import json
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -39,10 +39,13 @@ def dataframe_country(file_path) :
 
     rows = []
     for country in countries:
-        region = country.get("region") 
-        region_id = region.get("id")
-        region_name = region.get("value")
-        is_aggregate = region_id in ("", "NA") or region_name.lower() == "aggregates"
+        region = country.get("region") or {}
+        region_id = region.get("id", "")
+        region_name = region.get("value", "")
+        is_aggregate = (
+            str(region_id).upper() in ("", "NA")
+            or str(region_name).lower() == "aggregates"
+        )
         rows.append({"iso3": (country.get("id")), "country_name": (country.get("name")),
         "region_id": region_id,
         "region_name": region_name,
@@ -69,6 +72,18 @@ def dataframe_OWID(country_codes) : #renvoie un tuple des dataframes des pays et
     return country, region
 
 def prepare_project_data():
+    missing_files = [
+        file_path
+        for file_path in [OWID_FILE, COUNTRY_FILE, *WDI_FILES.values()]
+        if not file_path.exists()
+    ]
+    if missing_files:
+        names = ", ".join(file_path.name for file_path in missing_files)
+        raise FileNotFoundError(
+            f"Données brutes manquantes : {names}. "
+            "Lancer d'abord `python download.py` depuis la racine du dépôt."
+        )
+
     CLEANED_ROOT.mkdir(parents=True, exist_ok=True)
 
     country_metadata = dataframe_country(COUNTRY_FILE)

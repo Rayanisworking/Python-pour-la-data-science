@@ -1,161 +1,133 @@
 # Déchets plastiques mal gérés et mortalité infantile
 
 **Projet de Python pour la data science — analyse descriptive de l’année 2019**  
-**Groupe :** Anton LUCIBELLO, Marius PRIBETICH et Rayan GOMA
+**Groupe :** Anton Lucibello, Marius Pribetich et Rayan Goma
+
 **Sujet validé par le chargé de TD.**
 
 ## Question de recherche
 
 > En 2019, parmi les pays et territoires disposant des données, observe-t-on une association descriptive entre les déchets plastiques mal gérés par habitant et le taux de mortalité infantile ? Cette association paraît-elle similaire lorsqu’on compare séparément les groupes de PIB par habitant et d’accès à l’assainissement de base ?
 
-Ce projet étudie des indicateurs nationaux pour une seule année. Une association entre ces indicateurs ne prouve pas que les déchets plastiques causent une hausse de la mortalité infantile et ne permet pas de déduire le risque d’un enfant individuellement.
+L’analyse compare des indicateurs nationaux pour une seule année. Une association entre ces mesures ne démontre pas que les déchets plastiques causent une hausse de la mortalité infantile et ne permet pas de déduire le risque d’un enfant individuellement.
 
-## Résultats principaux
+## Résultats
 
-Sur les snapshots téléchargés le **21 novembre 2026**, après exclusion des agrégats et jointure des sources :
+Dans l’extraction utilisée pour le notebook, 153 pays/territoires ont pu être appariés aux métadonnées de la Banque mondiale. Parmi eux, 151 disposent des données de déchets et de mortalité, et 139 ont des données complètes sur les quatre indicateurs. La corrélation de rang de Spearman déchets–mortalité affichée dans le notebook est d’environ **0,585** sur les 151 observations; Pearson est d’environ **0,337**. Les comparaisons par groupes de PIB et d’assainissement sont également affichées dans le notebook et montrent une association de force variable.
 
-- **153** pays/territoires sont appariables aux métadonnées géographiques de la Banque mondiale;
-- **151** ont des valeurs pour les déchets plastiques et la mortalité infantile;
-- **139** ont des valeurs pour les quatre variables;
-- la corrélation de rang de Spearman entre déchets mal gérés par habitant et mortalité infantile est **0,59** sur les 151 observations, et **0,61** sur les 139 cas complets;
-- le sens de l’association reste positif dans les groupes de PIB et d’assainissement, mais son ampleur varie.
+Ces statistiques décrivent l’extraction et les sorties actuellement enregistrées; les API peuvent être mises à jour. Le notebook calcule aussi une comparaison de Spearman entre l’échantillon déchets–mortalité et les cas complets. Exécuter le notebook après toute nouvelle collecte et vérifier les résultats avant de les présenter.
 
-Ces chiffres sont descriptifs et concernent les snapshots utilisés pour l’analyse locale. Les sources peuvent être mises à jour : pour reproduire exactement ces nombres, il faut utiliser les mêmes fichiers bruts que ceux décrits dans `data/raw/manifest.json`. Les fichiers bruts ne sont pas versionnés dans Git; voir la section [Données et reproductibilité](#données-et-reproductibilité).
+## Figures
 
-Le rapport complet, avec médianes, quartiles et interprétation prudente, est dans [`RAPPORT_RESULTATS_ET_CONCLUSION.md`](RAPPORT_RESULTATS_ET_CONCLUSION.md).
+Les figures sont des sorties descriptives enregistrées dans `outputs/figures/` :
 
-### Figures
+**Distributions des quatre indicateurs**
 
-**Distribution des deux indicateurs principaux**
-
-![Distribution des déchets plastiques mal gérés et de la mortalité infantile en 2019](outputs/figures/01_distributions.png)
+![Distributions des indicateurs](outputs/figures/fig1_distributions_2019.png)
 
 **Déchets plastiques mal gérés et mortalité infantile**
 
-![Nuage de points des déchets plastiques mal gérés et de la mortalité infantile](outputs/figures/02_dechets_mortalite.png)
+![Nuage de points déchets et mortalité](outputs/figures/fig2_plastique_vs_mortalite_2019.png)
 
-**Mortalité infantile par quartile de déchets plastiques**
+**Comparaison descriptive par groupes de PIB**
 
-![Mortalité infantile par quartile de déchets plastiques mal gérés](outputs/figures/03_mortalite_par_quartile_dechets.png)
+![Association par groupes de PIB](outputs/figures/fig3_stratification_pib_2019.png)
 
-**Association descriptive par groupes de PIB et d’assainissement**
+**Comparaison descriptive par groupes d’assainissement**
 
-![Corrélation de rang par groupes de PIB et d’assainissement](outputs/figures/04_association_par_groupes.png)
+![Association par groupes d’assainissement](outputs/figures/fig4_stratification_assainissement_2019.png)
 
 ## Données et variables
 
-Le projet combine au moins deux sources ouvertes : Our World in Data (OWID) et les indicateurs World Development Indicators (WDI) de la Banque mondiale.
+Le projet combine Our World in Data (OWID) et les indicateurs World Development Indicators (WDI) de la Banque mondiale.
 
 | Variable utilisée | Source et code | Définition / unité |
 |---|---|---|
-| Déchets plastiques mal gérés par habitant | [OWID — source Meijer et al. (2021)](https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita) | kg par personne et par an. Estimation de déchets plastiques non recyclés, non incinérés ou non conservés dans des décharges étanches. Ce n’est pas une mesure directe de l’exposition individuelle. |
-| Mortalité infantile | World Bank WDI `SP.DYN.IMRT.IN` | Décès avant l’âge d’un an pour 1 000 naissances vivantes. Estimation compilée notamment par UN IGME et ses partenaires. |
+| Déchets plastiques mal gérés par habitant | [OWID — source Meijer et al. (2021)](https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita) | kg par personne et par an; estimation des déchets non recyclés, non incinérés ou non conservés dans des décharges étanches. Ne mesure pas directement l’exposition individuelle. |
+| Mortalité infantile | World Bank WDI `SP.DYN.IMRT.IN` | Décès avant l’âge d’un an pour 1 000 naissances vivantes. |
 | PIB par habitant | World Bank WDI `NY.GDP.PCAP.PP.KD` | Dollars internationaux constants de 2021 par habitant, en parité de pouvoir d’achat (PPA). |
-| Assainissement de base | World Bank WDI `SH.STA.BASS.ZS` | Pourcentage de la population utilisant au moins un service d’assainissement de base. L’indicateur inclut aussi les services gérés en toute sécurité; il ne mesure pas la collecte des déchets solides. |
+| Assainissement de base | World Bank WDI `SH.STA.BASS.ZS` | Pourcentage de la population utilisant au moins un service d’assainissement de base; ne mesure pas la collecte des déchets solides. |
 
-Les données sont filtrées à 2019 et reliées à l’aide du code géographique ISO3 et de l’année, pas du nom du territoire. Les agrégats régionaux et mondiaux sont retirés grâce aux métadonnées géographiques de la Banque mondiale. Les valeurs manquantes ne sont ni remplacées par zéro ni imputées.
+Les tables sont filtrées à 2019 et jointes par code ISO3 et année, pas par nom. Les agrégats régionaux ou mondiaux sont exclus selon les métadonnées géographiques de la Banque mondiale. Les valeurs manquantes ne sont ni remplacées par zéro ni imputées.
 
-## Organisation du projet
+## Fichiers du dépôt
 
 ```text
 .
 ├── README.md
 ├── requirements.txt
-├── GUIDE_EXPLICATION_CODE.md
-├── RAPPORT_RESULTATS_ET_CONCLUSION.md
-├── notebooks/
-│   └── 01_analyse_dechets_mortalite.ipynb
-├── src/
-│   ├── download_data.py
-│   └── prepare_data.py
+├── Notebook.ipynb       # analyse et graphiques
+├── download.py          # collecte des sources et manifeste
+├── cleaning.py          # nettoyage, jointure et exports locaux
+├── main.py              # préparation des tables et résumé des effectifs
 ├── data/
-│   ├── README.md
-│   ├── raw/          # snapshots locaux, ignorés par Git
-│   └── processed/    # tables préparées, ignorées par Git
+│   ├── manifest.json    # créé par download.py; sources et empreintes
+│   ├── raw/             # snapshots bruts locaux, ignorés par Git
+│   └── cleaned/         # tables préparées localement, ignorées par Git
 └── outputs/
-    ├── figures/      # graphiques PNG
-    └── tables/       # tableaux exportés
+    ├── figures/         # graphiques présentés ci-dessus
+    └── tables/          # tableaux calculés localement, ignorés par Git
 ```
 
-- [`download_data.py`](src/download_data.py) télécharge les sources publiques, conserve les snapshots bruts et écrit leur provenance dans un manifeste.
-- [`prepare_data.py`](src/prepare_data.py) nettoie les tables, vérifie les clés, exclut les agrégats, joint les sources et produit les audits.
-- Le [notebook d’analyse](notebooks/01_analyse_dechets_mortalite.ipynb) présente les étapes, les calculs et les graphiques.
-- Le [guide d’explication du code](GUIDE_EXPLICATION_CODE.md) explique les commandes terminal, les scripts et les opérations Pandas/Matplotlib pour faciliter l’appropriation du projet par les différents membres du groupe.
+Les scripts et le notebook sont à la racine du dépôt. Ouvrir le notebook `Notebook.ipynb`; les chemins `src/` ou `notebooks/` ne sont pas utilisés dans cette version.
 
 ## Installation et exécution
 
-Python **3.11** est recommandé. Depuis un terminal ouvert à la racine du dépôt, sous Windows PowerShell :
+Python **3.11** est recommandé. Depuis PowerShell, ouvrir un terminal à la racine du dépôt et lancer chaque commande dans l’ordre :
 
 ```powershell
 py -3.11 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe src\download_data.py
-.\.venv\Scripts\python.exe src\prepare_data.py
+.\.venv\Scripts\python.exe download.py
+.\.venv\Scripts\python.exe main.py
 .\.venv\Scripts\python.exe -m jupyter lab
 ```
 
-Chaque membre du groupe crée son propre environnement `.venv`; ce dossier n’est pas envoyé sur GitHub. Les commandes ci-dessus créent l’environnement, installent les dépendances, téléchargent et préparent les données, puis ouvrent JupyterLab. Dans JupyterLab, ouvrir `notebooks/01_analyse_dechets_mortalite.ipynb`, redémarrer le noyau et choisir **Run All**.
+Les commandes créent un environnement isolé, installent les dépendances, téléchargent les sources absentes, préparent les tables puis ouvrent JupyterLab. Depuis JupyterLab, ouvrir `Notebook.ipynb`, redémarrer le noyau et choisir **Run All**. Le notebook doit être lancé depuis la racine du dépôt.
 
-Dans un terminal macOS/Linux ou SSP Cloud, les commandes équivalentes sont :
+Sur macOS, Linux ou SSP Cloud, les commandes équivalentes sont :
 
 ```bash
 python3.11 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip
 .venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python src/download_data.py
-.venv/bin/python src/prepare_data.py
+.venv/bin/python download.py
+.venv/bin/python main.py
 .venv/bin/python -m jupyter lab
 ```
 
-Aucun compte GitHub, jeton d’API ou identifiant personnel n’est nécessaire pour télécharger les sources publiques. Pour l’explication détaillée de chaque commande, consulter [`GUIDE_EXPLICATION_CODE.md`](GUIDE_EXPLICATION_CODE.md).
+Les sources sont publiques; aucun compte GitHub, jeton d’API ou identifiant personnel n’est requis pour les télécharger.
 
 ## Données et reproductibilité
 
-Les scripts enregistrent les snapshots dans `data/raw/` et les tables préparées dans `data/processed/`. Ces deux répertoires sont exclus du dépôt par `.gitignore`, conformément aux consignes de ne pas versionner les jeux de données. Lorsqu’aucun snapshot n’est présent, le script de collecte interroge les API publiques; les données publiées par les fournisseurs peuvent évoluer.
+Les données brutes sont enregistrées localement dans `data/raw/`; les tables nettoyées et les tableaux calculés sont dans `data/cleaned/` et `outputs/tables/`. Ces répertoires sont ignorés par Git afin de ne pas publier les fichiers de données dans le dépôt. Le script `download.py` crée `data/manifest.json` avec les URLs utilisées, la taille et l’empreinte SHA-256 des fichiers; la date inscrite correspond à la création du manifeste, pas nécessairement à la date d’extraction initiale des snapshots déjà présents.
 
-Pour reproduire **exactement** les résultats de ce dépôt :
-
-1. récupérer les mêmes snapshots que ceux décrits dans `data/raw/manifest.json`;
-2. les placer sous `data/raw/` ou dans un stockage local/monté accessible;
-3. lancer le script de préparation puis le notebook du début à la fin.
-
-Les consignes du cours recommandent de partager les données figées hors Git, par exemple dans l’espace SSP Cloud/S3 du groupe. Le code actuel attend un chemin de dossier local ou monté; il ne lit pas directement une URL `s3://`. Le groupe doit donc suivre la procédure officielle du cours pour monter ou copier les fichiers, et vérifier l’accès du correcteur. La variable `PROJECT_DATA_DIR` peut indiquer un dossier accessible contenant `raw/` et `processed/`. Ne jamais publier de clé, mot de passe, jeton ou URL temporaire privée.
-
-Pour retélécharger volontairement les sources et remplacer les snapshots existants :
+Sur un clone neuf, exécuter `python download.py` pour récupérer les fichiers absents. Le script conserve les snapshots déjà présents. Pour remplacer volontairement les données locales, utiliser :
 
 ```powershell
-.\.venv\Scripts\python.exe src\download_data.py --force
+.\.venv\Scripts\python.exe download.py --force
 ```
 
-Cette option crée une nouvelle extraction; elle peut changer les résultats. Après son utilisation, relancer la préparation et le notebook, puis mettre à jour les chiffres et leur date dans le rapport.
+Une nouvelle extraction peut changer les effectifs et les résultats. Après `--force`, relancer `main.py` et le notebook, puis vérifier les chiffres avant de les utiliser.
 
-## Méthode descriptive
+Pour reproduire **exactement** les résultats du snapshot initial, il faut obtenir les mêmes fichiers bruts et les copier dans `data/raw/` avant le téléchargement. Les consignes du cours recommandent de les partager hors Git, par exemple dans l’espace SSP Cloud/S3 du groupe. Le code actuel lit un dossier local ou monté; il ne lit pas directement une URL `s3://`. Le groupe doit suivre la procédure officielle du cours pour rendre les snapshots accessibles aux trois membres et au correcteur. Les anciennes copies locales restent sur la machine du groupe, mais un nouveau clone GitHub n’inclut pas ces fichiers. Les fichiers de données peuvent également rester présents dans les anciens commits publics; les changements de ce dépôt ne réécrivent pas l’historique.
 
-1. Décrire les distributions et les valeurs manquantes avec les effectifs, médianes et quartiles.
-2. Examiner le nuage de points entre déchets plastiques mal gérés par habitant et mortalité infantile.
-3. Résumer l’association monotone avec la corrélation de rang de Spearman.
-4. Comparer la mortalité infantile par quartiles de déchets.
-5. Répéter les comparaisons séparément dans les groupes de PIB par habitant et d’accès à l’assainissement, en utilisant les cas complets des quatre variables.
-6. Comparer les effectifs et les résultats pour les deux échantillons afin de rendre visible l’effet du choix des données disponibles.
+## Méthode et limites
 
-Les ex æquo sont gardés ensemble lors de la création des groupes. Les valeurs extrêmes ne sont pas supprimées automatiquement; elles sont examinées et commentées.
-
-## Limites d’interprétation
-
-- Il s’agit d’une coupe transversale pour 2019, pas d’une analyse de l’évolution dans le temps.
-- L’unité d’analyse est un pays ou territoire; les résultats ne permettent pas de tirer une conclusion sur les individus (risque d’erreur écologique).
-- Les déchets plastiques mal gérés ne mesurent pas l’exposition réelle des enfants.
-- L’indicateur d’assainissement n’est pas un indicateur de collecte ou de traitement des déchets plastiques.
-- PIB et assainissement sont des contextes descriptifs, pas des variables qui éliminent tous les facteurs confondants.
-- Les données manquantes peuvent limiter la comparabilité et les entités incluses ne représentent pas nécessairement tous les pays/territoires.
-- Les corrélations observées ne démontrent pas de causalité.
+- Décrire les distributions et les données manquantes avec les effectifs, médianes et quartiles.
+- Examiner le nuage de points déchets–mortalité, la corrélation de rang de Spearman et les valeurs extrêmes.
+- Comparer la relation selon les terciles de PIB et des groupes d’assainissement, séparément, sur les cas complets.
+- Les corrélations et comparaisons par groupes sont descriptives; elles n’éliminent pas les différences non observées entre pays.
+- Cette coupe transversale de 2019 ne permet pas d’établir une causalité. Les déchets mal gérés ne mesurent pas l’exposition réelle des enfants, et l’assainissement ne mesure pas la gestion des plastiques.
+- La disponibilité variable des indicateurs peut influencer les pays inclus dans chaque calcul.
 
 ## Références
 
-- Our World in Data, [Mismanaged plastic waste per capita](https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita), données de Meijer et al. (2021), retraitées par OWID.
-- World Bank, [métadonnées WDI — mortalité infantile `SP.DYN.IMRT.IN`](https://api.worldbank.org/v2/indicator/SP.DYN.IMRT.IN?format=json).
-- World Bank, [métadonnées WDI — PIB/habitant `NY.GDP.PCAP.PP.KD`](https://api.worldbank.org/v2/indicator/NY.GDP.PCAP.PP.KD?format=json).
-- World Bank, [métadonnées WDI — assainissement `SH.STA.BASS.ZS`](https://api.worldbank.org/v2/indicator/SH.STA.BASS.ZS?format=json).
+- Our World in Data, [Mismanaged plastic waste per capita](https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita), source Meijer et al. (2021), retraitée par OWID.
+- World Bank WDI, [mortalité infantile `SP.DYN.IMRT.IN`](https://api.worldbank.org/v2/indicator/SP.DYN.IMRT.IN?format=json).
+- World Bank WDI, [PIB/habitant `NY.GDP.PCAP.PP.KD`](https://api.worldbank.org/v2/indicator/NY.GDP.PCAP.PP.KD?format=json).
+- World Bank WDI, [assainissement `SH.STA.BASS.ZS`](https://api.worldbank.org/v2/indicator/SH.STA.BASS.ZS?format=json).
 - Cours « Python pour la data science », [page Évaluation](https://pythonds.linogaliana.fr/content/annexes/evaluation.html).
 
+Vérifier les conditions de citation et licences des fournisseurs au moment du rendu.

@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Données locales et tables préparées : ne pas publier les fichiers sources
+# ni les versions nettoyées dans le dépôt Git.
+data/raw/
+data/cleaned/
+outputs/tables/
