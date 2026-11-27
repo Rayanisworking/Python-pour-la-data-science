@@ -86,18 +86,27 @@ py -3.11 -m venv .venv
 
 Les commandes créent un environnement isolé, installent les dépendances, téléchargent les sources absentes, préparent les tables puis ouvrent JupyterLab. Depuis JupyterLab, ouvrir `Notebook.ipynb`, redémarrer le noyau et choisir **Run All**. Le notebook doit être lancé depuis la racine du dépôt.
 
-Sur macOS, Linux ou SSP Cloud, les commandes équivalentes sont :
+### Exécution sur SSP Cloud / Onyxia
+
+Dans un service Jupyter Onyxia, Jupyter est déjà démarré par la plateforme. Il n’est donc pas nécessaire de créer un environnement virtuel dans le terminal ni de lancer un second serveur Jupyter. Ouvrir un terminal dans le service, se placer à la racine du dépôt (là où se trouvent `Notebook.ipynb`, `download.py` et `requirements.txt`), puis lancer :
 
 ```bash
-python3.11 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python download.py
-.venv/bin/python main.py
-.venv/bin/python -m jupyter lab
+python --version
+python -m pip install -r requirements.txt
+python download.py
+python main.py
 ```
 
-Les sources sont publiques; aucun compte GitHub, jeton d’API ou identifiant personnel n’est requis pour les télécharger.
+Le service utilisé par le groupe a fourni Python 3.14.7 sous le chemin `/opt/python/bin/python`; le nom `python` y pointe vers cet interpréteur. La version peut varier selon le service Onyxia choisi. La première commande permet de vérifier celle qui est active. `python -m pip` installe les dépendances pour ce même interpréteur.
+
+Ensuite, ouvrir `Notebook.ipynb` dans l’interface Jupyter déjà ouverte, choisir **Kernel → Restart Kernel**, puis **Run → Run All Cells**. Pour vérifier que le terminal et le noyau utilisent le même Python, exécuter temporairement dans une cellule :
+
+```python
+import sys
+print(sys.executable)
+```
+
+Si l’installation affiche une erreur de permission ou si le noyau utilise un autre interpréteur, ne pas multiplier les commandes d’installation au hasard : relever le message complet et configurer le service Onyxia ou son noyau pour employer l’environnement prévu. Les sources sont publiques; aucun compte GitHub, jeton d’API ou identifiant personnel n’est requis pour les télécharger.
 
 ## Données et reproductibilité
 
