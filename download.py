@@ -30,6 +30,10 @@ def download() :
     for filename, url, format in files:
         path = RAW_ROOT / filename
 
+        r = requests.get(url, timeout=60)
+        r.raise_for_status()
+
+
         if format == "json":
             path.write_text(json.dumps(r.json()), encoding="utf-8")
         else:  
