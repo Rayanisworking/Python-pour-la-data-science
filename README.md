@@ -1,142 +1,117 @@
 # Déchets plastiques mal gérés et mortalité infantile
 
-**Projet de Python pour la data science — analyse descriptive de l’année 2019**  
+**Projet de Python pour la data science — analyse descriptive, année 2019**
+
 **Groupe :** Anton Lucibello, Marius Pribetich et Rayan Goma
 
 **Sujet validé par le chargé de TD.**
 
-## Question de recherche
+## Problématique
 
 > En 2019, parmi les pays et territoires disposant des données, observe-t-on une association descriptive entre les déchets plastiques mal gérés par habitant et le taux de mortalité infantile ? Cette association paraît-elle similaire lorsqu’on compare séparément les groupes de PIB par habitant et d’accès à l’assainissement de base ?
 
-L’analyse compare des indicateurs nationaux pour une seule année. Une association entre ces mesures ne démontre pas que les déchets plastiques causent une hausse de la mortalité infantile et ne permet pas de déduire le risque d’un enfant individuellement.
+L’étude compare des indicateurs nationaux pour une année. Une association entre ces indicateurs ne démontre pas que les déchets plastiques causent une hausse de la mortalité infantile et ne permet pas d’en déduire l’exposition ou le risque d’un enfant individuellement.
 
-## Résultats
-
-Dans l’extraction utilisée pour le notebook, 153 pays/territoires ont pu être appariés aux métadonnées de la Banque mondiale. Parmi eux, 151 disposent des données de déchets et de mortalité, et 139 ont des données complètes sur les quatre indicateurs. La corrélation de rang de Spearman déchets–mortalité affichée dans le notebook est d’environ **0,585** sur les 151 observations; Pearson est d’environ **0,337**. Les comparaisons par groupes de PIB et d’assainissement sont également affichées dans le notebook et montrent une association de force variable.
-
-Ces statistiques décrivent l’extraction et les sorties actuellement enregistrées; les API peuvent être mises à jour. Le notebook calcule aussi une comparaison de Spearman entre l’échantillon déchets–mortalité et les cas complets. Exécuter le notebook après toute nouvelle collecte et vérifier les résultats avant de les présenter.
-
-## Figures
-
-Les figures sont des sorties descriptives enregistrées dans `outputs/figures/` :
-
-**Distributions des quatre indicateurs**
-
-![Distributions des indicateurs](outputs/figures/fig1_distributions_2019.png)
-
-**Déchets plastiques mal gérés et mortalité infantile**
-
-![Nuage de points déchets et mortalité](outputs/figures/fig2_plastique_vs_mortalite_2019.png)
-
-**Comparaison descriptive par groupes de PIB**
-
-![Association par groupes de PIB](outputs/figures/fig3_stratification_pib_2019.png)
-
-**Comparaison descriptive par groupes d’assainissement**
-
-![Association par groupes d’assainissement](outputs/figures/fig4_stratification_assainissement_2019.png)
-
-## Données et variables
-
-Le projet combine Our World in Data (OWID) et les indicateurs World Development Indicators (WDI) de la Banque mondiale.
-
-| Variable utilisée | Source et code | Définition / unité |
-|---|---|---|
-| Déchets plastiques mal gérés par habitant | [OWID — source Meijer et al. (2021)](https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita) | kg par personne et par an; estimation des déchets non recyclés, non incinérés ou non conservés dans des décharges étanches. Ne mesure pas directement l’exposition individuelle. |
-| Mortalité infantile | World Bank WDI `SP.DYN.IMRT.IN` | Décès avant l’âge d’un an pour 1 000 naissances vivantes. |
-| PIB par habitant | World Bank WDI `NY.GDP.PCAP.PP.KD` | Dollars internationaux constants de 2021 par habitant, en parité de pouvoir d’achat (PPA). |
-| Assainissement de base | World Bank WDI `SH.STA.BASS.ZS` | Pourcentage de la population utilisant au moins un service d’assainissement de base; ne mesure pas la collecte des déchets solides. |
-
-Les tables sont filtrées à 2019 et jointes par code ISO3 et année, pas par nom. Les agrégats régionaux ou mondiaux sont exclus selon les métadonnées géographiques de la Banque mondiale. Les valeurs manquantes ne sont ni remplacées par zéro ni imputées.
-
-## Fichiers du dépôt
+## Contenu du dépôt
 
 ```text
 .
-├── README.md
-├── requirements.txt
-├── Notebook.ipynb       # analyse et graphiques
-├── download.py          # collecte des sources et manifeste
-├── cleaning.py          # nettoyage, jointure et exports locaux
-├── main.py              # préparation des tables et résumé des effectifs
+├── Notebook.ipynb      # analyse descriptive, cartes et graphiques
+├── download.py         # téléchargement des données sources
+├── cleaning.py         # nettoyage, jointure et exports locaux
+├── requirements.txt    # dépendances Python, dont GeoPandas
 ├── data/
-│   ├── manifest.json    # créé par download.py; sources et empreintes
-│   ├── raw/             # snapshots bruts locaux, ignorés par Git
-│   └── cleaned/         # tables préparées localement, ignorées par Git
+│   ├── manifest.json   # provenance et empreintes des snapshots
+│   └── raw data/       # CSV/JSON sources versionnés dans le dépôt (nom avec espace)
 └── outputs/
-    ├── figures/         # graphiques présentés ci-dessus
-    └── tables/          # tableaux calculés localement, ignorés par Git
+    └── figures/        # figures exportées et versionnées
 ```
 
-Les scripts et le notebook sont à la racine du dépôt. Ouvrir le notebook `Notebook.ipynb`; les chemins `src/` ou `notebooks/` ne sont pas utilisés dans cette version.
+`main.py` n’est pas nécessaire : le parcours principal est le notebook `Notebook.ipynb`, qui appelle les fonctions de `cleaning.py` et `download.py`. Les tables générées dans `data/cleaned/` et `outputs/tables/` sont locales et ignorées par Git.
 
-## Installation et exécution
+## Données et sources
 
-Python **3.11** est recommandé. Depuis PowerShell, ouvrir un terminal à la racine du dépôt et lancer chaque commande dans l’ordre :
+Le projet croise quatre indicateurs de 2019 :
+
+| Variable | Source et code | Définition / unité |
+|---|---|---|
+| Déchets plastiques mal gérés par habitant | [Our World in Data, source Meijer et al. (2021)](https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita) | kg par personne et par an; estimation des déchets non recyclés, non incinérés ou non conservés dans des décharges étanches. Ce n’est pas une mesure directe de l’exposition individuelle. |
+| Mortalité infantile | Banque mondiale WDI `SP.DYN.IMRT.IN` | Décès avant l’âge d’un an pour 1 000 naissances vivantes. |
+| PIB par habitant | Banque mondiale WDI `NY.GDP.PCAP.PP.KD` | Dollars internationaux constants de 2021 par habitant, en PPA. |
+| Assainissement de base | Banque mondiale WDI `SH.STA.BASS.ZS` | Pourcentage de la population utilisant au moins un service d’assainissement de base; ne mesure pas la collecte des déchets plastiques. |
+
+Les données sont reliées par code géographique ISO3 et année, pas par nom. Les agrégats sont filtrés grâce aux métadonnées géographiques de la Banque mondiale. Les valeurs manquantes ne sont pas remplacées par zéro et ne sont pas imputées.
+
+Les snapshots sources nécessaires à l’analyse sont présents sous **`data/raw data/`** (avec un espace dans le nom du dossier) et sont versionnés dans ce dépôt. L’archive géographique Natural Earth est également téléchargée dans ce dossier par le script; la cellule cartographique lit actuellement le fond depuis son URL publique. Le manifeste `data/manifest.json` documente les URL, tailles et empreintes des snapshots répertoriés. Les tables nettoyées sont recréées localement par le notebook et `cleaning.py`.
+
+## Résultats descriptifs
+
+Pour l’extraction enregistrée dans ce dépôt, 153 entités sont appariables, 151 disposent des valeurs de déchets et de mortalité, et 139 ont les quatre indicateurs. Dans l’échantillon principal, la corrélation de rang de Spearman est d’environ **0,585** et Pearson d’environ **0,337**. Les comparaisons par groupes de PIB et d’assainissement sont descriptives; la force de l’association varie entre groupes.
+
+Ces chiffres décrivent l’extraction versionnée. Les sources peuvent être révisées. Après toute mise à jour, relancer le notebook et vérifier les sorties avant de reprendre les chiffres dans une présentation.
+
+### Figures disponibles
+
+![Distributions des indicateurs](outputs/figures/fig1_distributions_2019.png)
+
+![Carte mondiale des quatre indicateurs](outputs/figures/fig2_cartes_mondiales_2019.png)
+
+![Déchets plastiques et mortalité infantile](outputs/figures/fig2_plastique_vs_mortalite_2019.png)
+
+![Comparaison par groupes de PIB](outputs/figures/fig3_stratification_pib_2019.png)
+
+![Comparaison par groupes d’assainissement](outputs/figures/fig4_stratification_assainissement_2019.png)
+
+La cellule cartographique du notebook utilise GeoPandas et lit le fond cartographique Natural Earth depuis une URL. Pour régénérer cette carte, installer les dépendances et disposer d’un accès réseau. Le groupe doit terminer la vérification complète de cette cellule avant d’affirmer que le notebook passe **Run All** dans un environnement propre.
+
+## Installation et exécution avec VS Code (Windows)
+
+1. Cloner le dépôt et ouvrir son dossier racine dans VS Code.
+2. Installer l’extension Microsoft **Python** si nécessaire.
+3. Choisir **Ctrl+Shift+P → Python: Select Interpreter** et sélectionner un interpréteur Python installé (Python 3.11 ou plus récent est recommandé).
+4. Ouvrir **Terminal → New Terminal** dans VS Code et exécuter :
 
 ```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --upgrade pip
+python --version
+python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe download.py
-.\.venv\Scripts\python.exe main.py
-.\.venv\Scripts\python.exe -m jupyter lab
 ```
 
-Les commandes créent un environnement isolé, installent les dépendances, téléchargent les sources absentes, préparent les tables puis ouvrent JupyterLab. Depuis JupyterLab, ouvrir `Notebook.ipynb`, redémarrer le noyau et choisir **Run All**. Le notebook doit être lancé depuis la racine du dépôt.
+Dans VS Code, ouvrir `Notebook.ipynb`, choisir le noyau Python situé dans `.venv`, redémarrer le noyau puis sélectionner **Run All Cells**. Si `python` n’est pas reconnu, sélectionner d’abord l’interpréteur Python dans VS Code et ouvrir un nouveau terminal.
 
-### Exécution sur SSP Cloud / Onyxia
+Les snapshots de l’analyse sont déjà dans le dépôt. Pour reproduire cette extraction, ne lance pas `download.py` avant le notebook : ce script télécharge les versions actuelles des sources et remplace les fichiers sources locaux.
 
-Dans un service Jupyter Onyxia, Jupyter est déjà démarré par la plateforme. Il n’est donc pas nécessaire de créer un environnement virtuel dans le terminal ni de lancer un second serveur Jupyter. Ouvrir un terminal dans le service, se placer à la racine du dépôt (là où se trouvent `Notebook.ipynb`, `download.py` et `requirements.txt`), puis lancer :
+## Installation et exécution dans SSP Cloud / Onyxia
+
+1. Lancer un service **Jupyter-Python** et ouvrir son terminal intégré.
+2. Se placer à la racine du dépôt (là où se trouvent `Notebook.ipynb`, `download.py` et `requirements.txt`).
+3. Vérifier le Python fourni par le service et installer les paquets :
 
 ```bash
 python --version
 python -m pip install -r requirements.txt
-python download.py
-python main.py
 ```
 
-Le service utilisé par le groupe a fourni Python 3.14.7 sous le chemin `/opt/python/bin/python`; le nom `python` y pointe vers cet interpréteur. La version peut varier selon le service Onyxia choisi. La première commande permet de vérifier celle qui est active. `python -m pip` installe les dépendances pour ce même interpréteur.
+Jupyter étant déjà démarré dans Onyxia, il n’est pas nécessaire de lancer un second serveur JupyterLab. Ouvrir `Notebook.ipynb` dans l’interface, sélectionner le noyau correspondant au Python du service, redémarrer le noyau et choisir **Run All Cells**. Pour vérifier quel interpréteur utilise le noyau, exécuter temporairement `import sys; print(sys.executable)` dans une cellule.
 
-Ensuite, ouvrir `Notebook.ipynb` dans l’interface Jupyter déjà ouverte, choisir **Kernel → Restart Kernel**, puis **Run → Run All Cells**. Pour vérifier que le terminal et le noyau utilisent le même Python, exécuter temporairement dans une cellule :
+Les snapshots versionnés permettent d’analyser la même extraction que celle décrite plus haut sans appeler l’API pour les données OWID/WDI. La cellule cartographique télécharge toutefois le fond Natural Earth; une connexion réseau est nécessaire pour la régénérer.
 
-```python
-import sys
-print(sys.executable)
-```
+## Actualiser les données
 
-Si l’installation affiche une erreur de permission ou si le noyau utilise un autre interpréteur, ne pas multiplier les commandes d’installation au hasard : relever le message complet et configurer le service Onyxia ou son noyau pour employer l’environnement prévu. Les sources sont publiques; aucun compte GitHub, jeton d’API ou identifiant personnel n’est requis pour les télécharger.
-
-## Données et reproductibilité
-
-Les données brutes sont enregistrées localement dans `data/raw/`; les tables nettoyées et les tableaux calculés sont dans `data/cleaned/` et `outputs/tables/`. Ces répertoires sont ignorés par Git afin de ne pas publier les fichiers de données dans le dépôt. Le script `download.py` crée `data/manifest.json` avec les URLs utilisées, la taille et l’empreinte SHA-256 des fichiers; la date inscrite correspond à la création du manifeste, pas nécessairement à la date d’extraction initiale des snapshots déjà présents.
-
-Sur un clone neuf, exécuter `python download.py` pour récupérer les fichiers absents. Le script conserve les snapshots déjà présents. Pour remplacer volontairement les données locales, utiliser :
-
-```powershell
-.\.venv\Scripts\python.exe download.py --force
-```
-
-Une nouvelle extraction peut changer les effectifs et les résultats. Après `--force`, relancer `main.py` et le notebook, puis vérifier les chiffres avant de les utiliser.
-
-Pour reproduire **exactement** les résultats du snapshot initial, il faut obtenir les mêmes fichiers bruts et les copier dans `data/raw/` avant le téléchargement. Les consignes du cours recommandent de les partager hors Git, par exemple dans l’espace SSP Cloud/S3 du groupe. Le code actuel lit un dossier local ou monté; il ne lit pas directement une URL `s3://`. Le groupe doit suivre la procédure officielle du cours pour rendre les snapshots accessibles aux trois membres et au correcteur. Les anciennes copies locales restent sur la machine du groupe, mais un nouveau clone GitHub n’inclut pas ces fichiers. Les fichiers de données peuvent également rester présents dans les anciens commits publics; les changements de ce dépôt ne réécrivent pas l’historique.
+`download.py` télécharge les fichiers OWID et Banque mondiale dans `data/raw data/` et remplace les fichiers présents. Ne l’exécuter que si le groupe souhaite actualiser l’extraction. Après ce téléchargement, relancer le notebook, vérifier les effectifs et les résultats, puis mettre à jour ce README si les chiffres changent.
 
 ## Méthode et limites
 
-- Décrire les distributions et les données manquantes avec les effectifs, médianes et quartiles.
-- Examiner le nuage de points déchets–mortalité, la corrélation de rang de Spearman et les valeurs extrêmes.
-- Comparer la relation selon les terciles de PIB et des groupes d’assainissement, séparément, sur les cas complets.
-- Les corrélations et comparaisons par groupes sont descriptives; elles n’éliminent pas les différences non observées entre pays.
-- Cette coupe transversale de 2019 ne permet pas d’établir une causalité. Les déchets mal gérés ne mesurent pas l’exposition réelle des enfants, et l’assainissement ne mesure pas la gestion des plastiques.
-- La disponibilité variable des indicateurs peut influencer les pays inclus dans chaque calcul.
+- Décrire les distributions avec les effectifs, médianes et quartiles; examiner les valeurs extrêmes.
+- Comparer Pearson, qui résume la relation linéaire sur les valeurs, et Spearman, qui résume l’association entre rangs. Leur différence ne permet pas à elle seule d’identifier la forme de la relation.
+- Comparer les associations dans les groupes de PIB et d’assainissement. Ces stratifications sont descriptives et ne contrôlent pas tous les autres facteurs.
+- Les pays et territoires sont les unités d’analyse : une association nationale ne permet pas de conclure sur les individus (risque d’erreur écologique).
+- Les déchets mal gérés ne mesurent pas directement l’exposition des enfants; l’assainissement ne mesure pas la collecte des plastiques.
+- Les indicateurs manquants et les facteurs sociaux, sanitaires ou géographiques non étudiés limitent l’interprétation.
+- La coupe transversale 2019 et les corrélations ne démontrent pas de causalité.
 
 ## Références
 
 - Our World in Data, [Mismanaged plastic waste per capita](https://ourworldindata.org/grapher/mismanaged-plastic-waste-per-capita), source Meijer et al. (2021), retraitée par OWID.
-- World Bank WDI, [mortalité infantile `SP.DYN.IMRT.IN`](https://api.worldbank.org/v2/indicator/SP.DYN.IMRT.IN?format=json).
-- World Bank WDI, [PIB/habitant `NY.GDP.PCAP.PP.KD`](https://api.worldbank.org/v2/indicator/NY.GDP.PCAP.PP.KD?format=json).
-- World Bank WDI, [assainissement `SH.STA.BASS.ZS`](https://api.worldbank.org/v2/indicator/SH.STA.BASS.ZS?format=json).
+- Banque mondiale WDI : [mortalité infantile `SP.DYN.IMRT.IN`](https://api.worldbank.org/v2/indicator/SP.DYN.IMRT.IN?format=json), [PIB/habitant `NY.GDP.PCAP.PP.KD`](https://api.worldbank.org/v2/indicator/NY.GDP.PCAP.PP.KD?format=json), [assainissement `SH.STA.BASS.ZS`](https://api.worldbank.org/v2/indicator/SH.STA.BASS.ZS?format=json).
 - Cours « Python pour la data science », [page Évaluation](https://pythonds.linogaliana.fr/content/annexes/evaluation.html).
-
-Vérifier les conditions de citation et licences des fournisseurs au moment du rendu.
